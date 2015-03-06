@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   Message1.msg
 #   Message2.msg
     wifi_signal_msg.msg
+    trigger.msg
  )
 
 
@@ -47,5 +48,8 @@ TARGET_LINK_LIBRARIES( wifi_scan ${LIBIW_LIBRARY} )
 add_executable(scan_wifi src/test_wifi_scanner.cpp)
 target_link_libraries(scan_wifi ${catkin_LIBRARIES})
 TARGET_LINK_LIBRARIES( scan_wifi wifi_scan)
+
+add_executable(trigger src/trigger.cpp)
+target_link_libraries(trigger ${catkin_LIBRARIES})
 
 add_dependencies(scan_wifi wifi_scanner_generate_messages_cpp)

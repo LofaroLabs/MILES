@@ -15,13 +15,13 @@
 
 class Node{
     public:
-	void Normalize();
-	void Sort(bool up);
-	std::string toString();
-	router routers[20];
-	pose pos;
+	void Normalize(); //Will normalize the node
+	void Sort(bool up); //Sorts the MAC addresses by signal strength, maybe should be by name
+	std::string toString(); //For printing
+	router routers[20]; //The router MAC and signal strength values
+	pose pos;  //The position of this node with respect to the map
+	double prob; //The probability that we are at this Node
 
-       
 };
 
 #endif

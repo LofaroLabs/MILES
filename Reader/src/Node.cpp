@@ -1,16 +1,7 @@
 #include <Node.h>
 
-std::string Node::toString(){
-	std::string ret;
 
-	ret="____________________________________________\n"+this->pos.toString()+"\n";
-
-	for(int x=0;x<(sizeof(this->routers)/sizeof(this->routers[0]));x++){
-		if(this->routers[x].Strength!=0)
-			ret=ret+this->routers[x].toString()+"\n";
-	}
-	return ret;
-}
+//This will sort the MACS from greatest to least
 void Node::Sort(bool up){
 	router rout;
 	bool done=false;
@@ -32,6 +23,7 @@ void Node::Sort(bool up){
 	}
 	return;
 }
+//This will normalize the node with respect to the highest signal strength
 void Node::Normalize(){
 	int max=0;
 	for(int x=0;x<(sizeof(this->routers)/sizeof(this->routers[0]));x++){
@@ -45,11 +37,24 @@ void Node::Normalize(){
 			this->routers[x].Strength=this->routers[x].Strength/max;
 	}
 }
-
+//standard toString() for the pose
 std::string pose::toString(){
 	return "x: "+std::to_string(this->x)+"\ty: "+std::to_string(this->y)+"\tz: "+std::to_string(this->z);
 }
+//standard toString() for the MAC
 std::string router::toString(){
 	return "MAC: "+this->MAC+"\tStr: "+std::to_string(this->Strength);
+}
+//standard toString()  for the Node for debugging
+std::string Node::toString(){
+	std::string ret;
+
+	ret="____________________________________________\nProb:\n"+std::to_string(this->prob)+"\n"+this->pos.toString()+"\n";
+
+	for(int x=0;x<(sizeof(this->routers)/sizeof(this->routers[0]));x++){
+		if(this->routers[x].Strength>=.1)
+			ret=ret+this->routers[x].toString()+"\n";
+	}
+	return ret;
 }
 

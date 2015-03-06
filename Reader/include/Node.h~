@@ -13,14 +13,6 @@
 #include <Router.h>
 
 
-class pose{
-public:
-	std::string toString();
-	double x;
-	double y;
-	double z;
-};
-
 class Node{
     public:
 	void Normalize();
@@ -28,8 +20,8 @@ class Node{
 	std::string toString();
 	router routers[20];
 	pose pos;
+	double prob;
 
-       
 };
 
 #endif

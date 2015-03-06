@@ -35,13 +35,13 @@ int wifi_scan::scan(){
     int               buflen = IW_SCAN_MAX_DATA; /* Min for compat WE<17 */
     struct timeval    tv;             /* Select timeout */
     int               timeout = 15000000;     /* 15s */
-    int               scanflags = IW_SCAN_THIS_ESSID | IW_SCAN_ALL_FREQ | IW_SCAN_ALL_MODE | IW_SCAN_ALL_RATE;		/* Flags for scan */
+    int               scanflags = IW_SCAN_ALL_ESSID | IW_SCAN_ALL_FREQ | IW_SCAN_ALL_MODE | IW_SCAN_ALL_RATE;		/* Flags for scan */
     char *essid = NULL;
-    essid = strdup("MASON-SECURE");
+    //essid = strdup("MASON-SECURE");
 
     wrq.u.data.pointer = essid;
-    wrq.u.data.length = strlen(essid)+1;
-    //wrq.u.data.length = 0;
+    //wrq.u.data.length = strlen(essid)+1;
+    wrq.u.data.length = 0;
 
     tv.tv_sec = 0;
     tv.tv_usec = 250000;

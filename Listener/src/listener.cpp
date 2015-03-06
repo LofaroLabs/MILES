@@ -2,17 +2,17 @@
 #include <tf/transform_listener.h>
 #include <wifi_scanner/wifi_signal_msg.h>
 tf::TransformListener *listener;
-
+std::string fileName= "wifi.txt";
 void writeToFile(wifi_scanner::wifi_signal_msg msg){
-                FILE* outfile=fopen("pose.txt","a");
+                FILE* outfile=fopen("wifi.txt","a");
 		try{
-			//tf::StampedTransform transform;
+			tf::StampedTransform transform;
 			printf("Scanner message found, writing to file\n");
-  			//listener->lookupTransform("/camera_link", "/camera_rgb_frame", ros::Time(0), transform);
-			//fprintf(outfile,"x:	%f, y:	%f, z:	%f||",
-			//	transform.getOrigin().x(),
-			//	transform.getOrigin().y(),
-			//	transform.getOrigin().z());
+  			listener->lookupTransform("/camera_link", "/camera_rgb_frame", ros::Time(0), transform);
+			fprintf(outfile,"x:	%f, y:	%f, z:	%f||",
+				transform.getOrigin().x(),
+				transform.getOrigin().y(),
+				transform.getOrigin().z());
 			fprintf(outfile,"%f|",ros::Time::now().toSec());
 
 			int x=0;
@@ -35,8 +35,8 @@ int main(int argc, char** argv){
 
 	ros::init(argc, argv, "my_tf_listener");
 	ros::NodeHandle node;
-	//listener = new tf::TransformListener();
-	FILE* outfile=fopen("pose.txt","w");
+	listener = new tf::TransformListener();
+	FILE* outfile=fopen("wifi.txt","w");
          printf("1\n");
         fclose(outfile);
         ros::Subscriber sub = node.subscribe<wifi_scanner::wifi_signal_msg>("signals",10,writeToFile);

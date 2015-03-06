@@ -1,27 +1,33 @@
 
 #include <NodeList.h>
 #include <Node.h>
+
+//Normalize all the nodes in the nodelist
 void NodeList::NormalizeAll(){
 	for(int x=0;x<this->nodeCount;x++){
 		this->list[x].Normalize();
 	}
 }
 
+//Sort the MACs of all the nodes in the nodelist
 void NodeList::SortAll(bool up){
 	for(int x=0;x<this->nodeCount;x++){
-		this->list[x].Sort(true);
+		this->list[x].Sort(up);
 	}
 }
+//Standard toString() for debugging. Prints out all nodes
 std::string NodeList::toString(){
 	std::string ret="";
 	for(int x=0;x<this->nodeCount;x++){
-		ret+=std::to_string(x)+"\n"+this->list[x].toString();
+		ret+="\n"+std::to_string(x)+this->list[x].toString();
 	}
 	return ret;
 }
+//Standard toString() for debugging. Prints a single node
 std::string NodeList::toString(int x){
 	return this->list[x].toString();
 }
+//Standard toString() for debugging. Prints node section from begin to end
 std::string NodeList::toString(int begin, int end){
 	std::string ret;
 	if(begin>end){
@@ -38,18 +44,40 @@ std::string NodeList::toString(int begin, int end){
 	}
 	return ret;
 }
-	
+//Prints out a single router from all nodes. Show the change in strength over change in position
+std::string NodeList::RouterInfo(std::string MAC){
+	std::string ret=MAC+" info:\n";
+	for(int x=0;x<this->nodeCount;x++){
+		int y=0;
+		while(this->list[x].routers[y].Strength!=0){
+			if(this->list[x].routers[y].MAC==MAC){
+				ret+="\n"+this->list[x].pos.toString()+" Strength: "+this->list[x].routers[y].toString();
+				break;
+			}
+			y++;	
+		}
+		
+	}
+	return ret;
+}
+
+//Load the NodeList from file.
+//The files needed will be the wifi file created from the wifi listener, 
+//and the trajectory file created by rgbdslam
 void NodeList::loadFromFile(std::string wifiFILE,std::string trajFILE)
 {
+	//Read from both the trajectory file from rgbdslam and the wifi file from wifi scanner
 	FILE* wfile=fopen(wifiFILE.c_str(),"r");
 
 	FILE* tfile=fopen(trajFILE.c_str(),"r");
 	
 	char line[10000];
 	this->nodeCount =0;
+	//Go through the wifi file line by line
 	while(fgets(line,1000,wfile)!=NULL){
 		std::string lineString = line;
 		int front=0;
+
 		//get the time stamp from the wifi file
 		int back = lineString.find("|");
 		std::string time = lineString.substr(0,back);
@@ -57,16 +85,20 @@ void NodeList::loadFromFile(std::string wifiFILE,std::string trajFILE)
 		printf("time %s\n",time.c_str());
 		double wtime =atof(time.c_str());
 		front=back;
+	
 		std::string xstring;
 		std::string ystring;
 		std::string zstring;
+		//Go through the Trajectory file line by line
 		while(fgets(line,1000,tfile)!=NULL){
+			//Find the time that the trajectory was posted 
+			//and compare with the wifi time
 			std::string tstring = line;
 			int b = tstring.find(" ");
 			std::string t= tstring.substr(0,b);
 			double ptime = atof(t.c_str());
  			
-			//Get the corresponding data from the trajectory file
+			//if the times are close, get the xyz data
 			if(ptime-wtime<=.5&&ptime-wtime>=-.5){
 				tstring= tstring.substr(b+1,-1);
 				int f=0;
@@ -125,3 +157,9 @@ void NodeList::loadFromFile(std::string wifiFILE,std::string trajFILE)
 	fclose(tfile);
 }
 
+void NodeList::toFile(std::string filename){
+	FILE* outfile=fopen(filename.c_str(),"w");
+	fprintf(outfile,"%s\n",this->toString().c_str());
+	fclose(outfile);
+
+}
