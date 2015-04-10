@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 2.8.3)
+project(listener)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -std=gnu++0x -Os -fPIC")
+
+find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp rospy std_msgs tf visualization_msgs)
+
+catkin_package(CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs tf visualization_msgs)
+
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(listener src/listener.cpp)
+target_link_libraries(listener ${catkin_LIBRARIES})
+
+if(catkin_EXPORTED_TARGETS)
+  add_dependencies(listener ${catkin_EXPORTED_TARGETS})
+endif()
+
