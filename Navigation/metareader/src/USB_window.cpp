@@ -3,6 +3,7 @@
 #include <iostream>
 #include "../include/qdude/USB_window.hpp"
 #include <SerialStream.h>
+#include <std_msgs/String.h>
 namespace qdude {
 
 using namespace Qt;
@@ -15,7 +16,7 @@ USBWindow::USBWindow(int argc, char** argv,Ui::MainWindowDesign *main_ui, QWidge
 	m_main_ui= main_ui;
 	ui.setupUi(this); // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
 
-	setWindowIcon(QIcon(":/images/icon.png"));
+	//setWindowIcon(QIcon(":/images/icon.png"));
 	
 }
 USBWindow::~USBWindow() {}

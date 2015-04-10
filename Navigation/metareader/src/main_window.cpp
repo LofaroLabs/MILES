@@ -52,6 +52,8 @@ void MainWindow::on_Locations_currentIndexChanged(int index){
 }
 void MainWindow::on_Go_clicked(bool check ) {
 	QString goal=ui.Locations->currentText();
+	if(goal.isEmpty()||goal.isNull())
+		return;
 	QStringList Coords= goal.split("(x: ");
 	goal=Coords[1];
         goal.replace(")","");
@@ -62,6 +64,7 @@ void MainWindow::on_Go_clicked(bool check ) {
 	double y=atof(ystr.c_str());
 	printf("%f\n",x);
 	printf("%f\n",y);
+	qnode.SetGoal(x,y);
 }
 void MainWindow::on_Close_clicked(bool check ) {
 	QWidget::close();
@@ -114,7 +117,6 @@ void MainWindow::ReadSettings() {
 
 void MainWindow::WriteSettings() {
     QSettings settings("Qt-Ros Package", "qdude");
-    //settings.setValue("master_url",ui.line_edit_master->text());
     settings.setValue("geometry", saveGeometry());
     settings.setValue("windowState", saveState());
 }

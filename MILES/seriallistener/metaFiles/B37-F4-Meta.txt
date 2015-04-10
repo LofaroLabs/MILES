@@ -1,0 +1,3 @@
+x: 1||y: 10||Location: Lofaro Labs||Description: The laboratory of Dr. Lofaro that his senior design students and other robotics students use.||
+x: 10||y: 1||Location: Elevator||Description: The center 4th floor elevator.||
+x: 15||y: 15||Location: Room 4402||Description: This is Professor Someones Room.||

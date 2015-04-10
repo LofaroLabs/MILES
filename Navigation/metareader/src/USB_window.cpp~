@@ -3,6 +3,7 @@
 #include <iostream>
 #include "../include/qdude/USB_window.hpp"
 #include <SerialStream.h>
+#include <std_msgs/String.h>
 namespace qdude {
 
 using namespace Qt;
@@ -40,7 +41,7 @@ void USBWindow::on_buttonBox_accepted(){
 		return;
 	}
 	//Write the command to get the metadata
-	serial_port << "MD "<< ui.BuildNo->currentText().toStdString().c_str()<<" "<< ui.FloorNo->currentText().toStdString().c_str()<<std::endl ;
+	serial_port << "MD "<< ui.buildNo->currentText().toStdString().c_str()<<" "<< ui.FloorNo->currentText().toStdString().c_str()<<std::endl ;
 	//then read lines until empty <END>
 	printf("Finished send\n");
 //

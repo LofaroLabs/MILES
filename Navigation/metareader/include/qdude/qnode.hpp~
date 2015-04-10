@@ -20,7 +20,7 @@
 #include <string>
 #include <QThread>
 #include <QStringListModel>
-
+#include "geometry_msgs/PoseStamped.h"
 
 /*****************************************************************************
 ** Namespaces
@@ -37,12 +37,12 @@ class QNode : public QThread {
 public:
 	QNode(int argc, char** argv );
 	virtual ~QNode();
-	bool SetGoal(Qstring Location);
-
+	bool SetGoal(QString Location);
+	
 
 private:
 
-	ros::Publisher chatter_publisher;
+	ros::Publisher Goal_publisher;
 };
 
 }  // namespace qdude

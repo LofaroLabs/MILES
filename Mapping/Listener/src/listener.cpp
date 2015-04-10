@@ -18,15 +18,15 @@ void writeToFile(wifi_scanner::wifi_signal_msg msg){
 			printf("Scanner message found, writing to file\n");
   			//listener->lookupTransform("/odom", "/base_link", ros::Time(0), transform);
 			listener->lookupTransform("/base_laser_link", "/base_link", ros::Time(0), transform);
-			fprintf(outfile,"x:	%f, y:	%f, z:	%f||",
+			fprintf(outfile,"x:%f||y:%f||z:%f||",
 				transform.getOrigin().x(),
 				transform.getOrigin().y(),
 				transform.getOrigin().z());
-			fprintf(outfile,"%f|",ros::Time::now().toSec());
+			fprintf(outfile,"%f||",ros::Time::now().toSec());
 
 			int x=0;
 			printf("1\n");
-			while(msg.MAC[x]!=""&&x<19){
+			while(msg.MAC[x]!=""&&x<99){
                             fprintf(outfile,"[MAC: %s, Str %d]",msg.MAC[x].c_str(),msg.Sig[x]);		//printf("2\n");
 	    		    if(x<10)
 			    	markText+="[MAC: "+msg.MAC[x]+", Str: "+std::to_string(msg.Sig[x])+"]\n";
@@ -34,7 +34,6 @@ void writeToFile(wifi_scanner::wifi_signal_msg msg){
 			}
 			printf("%d routers were found!\n",x);
 			fprintf(outfile,"\n");
-printf("3\n");
 			marker.header.frame_id = "/base_link";
 			marker.header.stamp = ros::Time::now();
 

@@ -8,9 +8,9 @@
 #include <wifi_scanner/wifi_signal_msg.h>
 #include <ros/ros.h>
 
-#include "libusb-1.0/libusb.h"
+#include <std_msgs/String.h>
 
-void printdev(libusb_device *dev);
+ros::Publisher location_pub;
 
 void test(wifi_scanner::wifi_signal_msg msg){
 	//turn wifi reading into a node
@@ -25,14 +25,15 @@ void test(wifi_scanner::wifi_signal_msg msg){
 	curReading.Sort(true);
 	curReading.Normalize();
 	std::cout<<"\n\n"<<curReading.toString().c_str()<<std::endl;
-	
+	std_msgs::String msg2;
+	msg2.data = "THE LOCATION GOES HERE";
+	location_pub.publish(msg2);
+	ROS_INFO("%s",msg2.data.c_str());
 	
 };
 int main(int argc, char** argv){
-	libusb_device **devs;
-	libusb_context *ctx = NULL;
 
-	ros::init(argc, argv, "wifi_listener");
+	ros::init(argc, argv, "localizer");
 	ros::NodeHandle n;
 	NodeList list;	
 	list.loadFromFile("wifi.txt","trajectory.txt");
@@ -42,6 +43,8 @@ int main(int argc, char** argv){
 	list.NormalizeAll();
 	std::cout<< list.toString();
 	//std::cout<< list.RouterInfo("08:CC:68:DA:5C:11");
+	
+	location_pub = n.advertise<std_msgs::String>("location",1000);
 	ros::Subscriber sub = n.subscribe<wifi_scanner::wifi_signal_msg>("signals",10,test);
         ros::spin();
 }

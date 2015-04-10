@@ -31,12 +31,22 @@ QNode::QNode(int argc, char** argv )
 {
 	ros::init(argc,argv,"qdude");
 	ros::NodeHandle n;
-	chatter_publisher = n.advertise<std_msgs::String>("chatter", 1000);
+	Goal_publisher = n.advertise<geometry_msgs::PoseStamped>("move_base_simple/goal", 1);
 }
 
 QNode::~QNode() {
 }
-bool QNode::SetGoal(QString Location){
+bool QNode::SetGoal(double x, double y){
+	geometry_msgs::PoseStamped msg;
+	msg.header.frame_id="map";
+	msg.pose.position.x=0;
+	msg.pose.position.y=0;
+	msg.pose.position.z=0;
+	msg.pose.orientation.w=0;
+	msg.pose.orientation.x=0;
+	msg.pose.orientation.y=0;
+	msg.pose.orientation.z=0;
+	Goal_publisher.publish(msg);
 	
 }
 }
