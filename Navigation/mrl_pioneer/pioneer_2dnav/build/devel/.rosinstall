@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/jenish/catkin_ws/src/MILES/mrl_pioneer/pioneer_2dnav/build/devel/setup.sh
