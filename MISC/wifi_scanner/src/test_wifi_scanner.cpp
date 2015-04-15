@@ -31,10 +31,11 @@ void parse_args(int argc,char* argv[]){
 std::function<scanning_callback> cb = [](access_point &ap){
          //if(ap.essid=="MASON-SECURE"){
 	   if(1==1){
-		if(AP<20){
+		if(AP<99){
          		msg.MAC[AP]=ap.mac_address;
          		std::cout<<"        \t mac: "<<ap.mac_address<<std::endl;
-                	msg.Sig[AP]=ap.signal_strength;
+			if(ap.signal_strength>=0)
+                		msg.Sig[AP]=(ap.signal_strength/2)-100;
          		std::cout<<"        \t signal: "<<ap.signal_strength<<std::endl;
          		std::cout<<"        \t essid: "<<ap.essid<<std::endl<<std::endl;
 		}
@@ -55,7 +56,7 @@ void scan(wifi_scanner::trigger trig){
 	    elapsed = std::chrono::system_clock::now()-tim;
      	    std::cout<<"Time Taken: "<<elapsed.count()<<std::endl;
 	    signal_pub.publish(msg);
-	    for (int i=0; i<AP&&i<20; i++){
+	    for (int i=0; i<AP&&i<99; i++){
             	msg.MAC[i]="";
 		msg.Sig[i]=0;
             }

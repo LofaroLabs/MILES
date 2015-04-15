@@ -218,7 +218,16 @@ p, li { white-space: pre-wrap; }
     <addaction name="separator"/>
     <addaction name="actionMap_From_USB"/>
    </widget>
+   <widget class="QMenu" name="menuSet">
+    <property name="title">
+     <string>Set</string>
+    </property>
+    <addaction name="actionPose_Estimate"/>
+    <addaction name="separator"/>
+    <addaction name="actionPose_Estimate_Auto"/>
+   </widget>
    <addaction name="menuLoad"/>
+   <addaction name="menuSet"/>
   </widget>
   <action name="actionMetadata_From_File">
    <property name="text">
@@ -233,6 +242,16 @@ p, li { white-space: pre-wrap; }
   <action name="actionMap_From_USB">
    <property name="text">
     <string>Map From USB...</string>
+   </property>
+  </action>
+  <action name="actionPose_Estimate">
+   <property name="text">
+    <string>Pose Estimate</string>
+   </property>
+  </action>
+  <action name="actionPose_Estimate_Auto">
+   <property name="text">
+    <string>Pose Estimate Auto</string>
    </property>
   </action>
  </widget>

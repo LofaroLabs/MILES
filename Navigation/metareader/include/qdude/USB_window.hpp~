@@ -8,7 +8,7 @@
 
 //#include "libusb-1.0/libusb.h"
 
-namespace qdude {
+//namespace qdude {
 
 class USBWindow : public QDialog {
 Q_OBJECT
@@ -26,13 +26,13 @@ public Q_SLOTS:
 
 private:
 	Ui::USBWindowDesign ui;
-	Ui::MainWindowDesign *m_main_ui
+	Ui::MainWindowDesign *m_main_ui;
 	QNode qnode;
 	//libusb_device **devs;
 	//libusb_context *ctx;
 	QWidget *m_parent;
 };
 
-}  // namespace qdude
+//}  // namespace qdude
 
 #endif // qdude_USB_WINDOW_H

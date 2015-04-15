@@ -4,48 +4,51 @@
 #include <string>
 #include <std_msgs/String.h>
 #include <ros/package.h>
+#include <boost/asio/serial_port.hpp>
+#include <boost/asio.hpp>
+
 std::string location="";
 void LocationCallBack(const std_msgs::String::ConstPtr &msg){
 	location=msg->data;
 }
 
 int main(int argc, char** argv){
-using namespace LibSerial ;
+using namespace boost ;
 	ros::init(argc, argv, "SerialListener");
 	ros::NodeHandle n;
 	
 	ros::Subscriber sub = n.subscribe("location",1000,LocationCallBack);
-	
-	SerialStream serial_port ;
-	serial_port.Open(argv[1]);
-	serial_port.SetBaudRate( SerialStreamBuf::BAUD_9600 ) ;
-	serial_port.SetCharSize( SerialStreamBuf::CHAR_SIZE_8 ) ;
-	serial_port.SetNumOfStopBits(1) ;
-	serial_port.SetParity( SerialStreamBuf::PARITY_NONE ) ;
-	serial_port.SetFlowControl( SerialStreamBuf::FLOW_CONTROL_NONE ) ;
-	serial_port.SetVTime(15);
- 	serial_port.SetVMin(10);
-	
-	if ( ! serial_port.good() )
-	{
-		printf("Serial Port did not open\n");
-		return 0;
-	}
+
 	std::string pkg = ros::package::getPath("seriallistener");
-
+	
+	asio::io_service io;
+	asio::serial_port port(io);
+	port.open(argv[1]);
+	port.set_option(asio::serial_port_base::baud_rate(9600));
+	port.set_option(asio::serial_port::flow_control(asio::serial_port::flow_control::none));
+      	port.set_option(asio::serial_port::parity(asio::serial_port::parity::none));
+     	port.set_option(asio::serial_port::stop_bits(asio::serial_port::stop_bits::one));
+     	port.set_option(asio::serial_port::character_size(8));
 	while(1){
+		std::string answer="";
 		printf("Listening for Requests\n");
-		const int BUFFER_SIZE = 512 ;
-		char input_buffer[BUFFER_SIZE] ; 
-
-		serial_port.read( input_buffer, BUFFER_SIZE ) ;
-		std::string answer(input_buffer);
+		while(1){
+			char c;
+			printf("Before\n");
+			asio::read(port, asio::buffer(&c,1));
+			printf("After\n");
+			if(c=='\n')
+				break;	
+			answer=answer+c;
+			printf("%s\n",answer.c_str());
+		}
+		
 		printf("Request: %s\n",answer.c_str());
 
 		if(answer.find("LONCE")!=std::string::npos){
 			printf("Requested Location Once\n");
 			ros::spinOnce();
-			serial_port << location.c_str();
+			asio::write(port,asio::buffer(location.c_str(),location.length()-1));
 			//send location from ros topic
 		}
 		else if(answer.find("LAUTO")!=std::string::npos){
@@ -65,22 +68,36 @@ using namespace LibSerial ;
 			//send specific metadata file through port
 			//Parse the file name
 			int t =answer.find(" ");
-			answer=answer.substr(t,std::string::npos);
+			answer=answer.substr(t+1,std::string::npos);
+			//printf("%s\n",answer.c_str());
 			//37 4
 			t=answer.find(" ");
 			std::string buildNo=answer.substr(0,t);
-			std::string floorNo=answer.substr(t,std::string::npos);
-
+			printf("%s\n",buildNo.c_str());
+			std::string floorNo=answer.substr(t+1,1);
+			printf("%s\n",floorNo.c_str());
+	
 			std::string filename=pkg+"/metaFiles/B"+buildNo+"-F"+floorNo+"-Meta"+".txt";
-			printf("%s\n",filename.c_str());			
-			
-			FILE* mfile=fopen(filename.c_str(),"r");
-			char line[10000];
-			//send data line by line
-			while(fgets(line,1000,mfile)!=NULL){
-				serial_port << line;
+			printf("%s\n",filename.c_str());
+			FILE* mfile;			
+			try{
+				mfile=fopen(filename.c_str(),"r");
 			}
-			serial_port << "<END>";
+			catch(int e){
+				asio::write(port,asio::buffer("<END>\10",6));		
+			}
+			char line[255];
+			//send data line by line
+			while(fgets(line,255,mfile)!=NULL){
+				asio::write(port,asio::buffer("||", 2));
+				asio::write(port,asio::buffer(line, 255));
+				asio::write(port,asio::buffer("\10",1));
+				printf("%s\n",line);
+				//sleep(5);
+			}
+			fclose(mfile);
+			asio::write(port,asio::buffer("<END>\10",6));
+			
 		}
 		else if(answer.find("MAP")!=std::string::npos){
 			printf("Requested Map\n");
@@ -90,5 +107,6 @@ using namespace LibSerial ;
 		else{
 			printf("Unknown Request\n");
 		}
+		
 	}
 }
