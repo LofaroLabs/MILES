@@ -7,7 +7,7 @@
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio.hpp>
 
-std::string location="";
+std::string location="X:15 Y:20";
 void LocationCallBack(const std_msgs::String::ConstPtr &msg){
 	location=msg->data;
 }
@@ -27,7 +27,7 @@ using namespace boost ;
 	port.set_option(asio::serial_port_base::baud_rate(9600));
 	port.set_option(asio::serial_port::flow_control(asio::serial_port::flow_control::none));
       	port.set_option(asio::serial_port::parity(asio::serial_port::parity::none));
-     	port.set_option(asio::serial_port::stop_bits(asio::serial_port::stop_bits::one));
+        port.set_option(asio::serial_port::stop_bits(asio::serial_port::stop_bits::one));
      	port.set_option(asio::serial_port::character_size(8));
 	while(1){
 		std::string answer="";
@@ -48,6 +48,7 @@ using namespace boost ;
 		if(answer.find("LONCE")!=std::string::npos){
 			printf("Requested Location Once\n");
 			ros::spinOnce();
+			printf("AfterLONCE\n");
 			asio::write(port,asio::buffer(location.c_str(),location.length()-1));
 			//send location from ros topic
 		}
@@ -89,14 +90,15 @@ using namespace boost ;
 			char line[255];
 			//send data line by line
 			while(fgets(line,255,mfile)!=NULL){
-				asio::write(port,asio::buffer("||", 2));
-				asio::write(port,asio::buffer(line, 255));
-				asio::write(port,asio::buffer("\10",1));
-				printf("%s\n",line);
+			//	asio::write(port,asio::buffer("||", 2));
+				std::string send(line);
+				asio::write(port,asio::buffer(send.c_str(), send.length()));
+				//asio::write(port,asio::buffer("\n",1));
+				printf("%s",send.c_str());
 				//sleep(5);
 			}
 			fclose(mfile);
-			asio::write(port,asio::buffer("<END>\10",6));
+			asio::write(port,asio::buffer("<END>\n",6));
 			
 		}
 		else if(answer.find("MAP")!=std::string::npos){
