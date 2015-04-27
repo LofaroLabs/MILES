@@ -11,7 +11,7 @@
 /*****************************************************************************
 ** Includes
 *****************************************************************************/
-
+#include <string>
 #include <QtGui/QMainWindow>
 #include "ui_main_window.h"
 #include "ui_USB_window.h"
@@ -41,7 +41,7 @@ public:
 
 	void closeEvent(QCloseEvent *event); // Overloaded function
 	void showNoMasterMessage();
-
+	std::string m_port;
 public Q_SLOTS:
 	/******************************************
 	** Auto-connections (connectSlotsByName())
@@ -51,10 +51,13 @@ public Q_SLOTS:
     void on_Locations_currentIndexChanged(int index);
     void on_actionMetadata_From_File_triggered();
     void on_actionMetadata_From_USB_triggered();
+    void on_actionPort_triggered();
+    void on_actionPose_Estimate_triggered();
+
 private:
 	Ui::MainWindowDesign ui;
 	QNode qnode;
-};
+};	
 
 }  // namespace qdude
 

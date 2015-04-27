@@ -4,9 +4,10 @@
 #include <string>
 class router{
 public:
-	std::string toString();
-	std::string MAC;
-	double         Strength;
+	std::string	toString();
+	std::string	MAC;
+	double		Strength;
+	double		Diff;
 };
 
 #endif

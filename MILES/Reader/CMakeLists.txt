@@ -3,10 +3,10 @@ project(reader)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -std=gnu++0x -Os -fPIC")
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs roscpp rospy std_msgs tf wifi_scanner)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf wifi_scanner)
 
 
-catkin_package(CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs tf wifi_scanner)
+catkin_package(CATKIN_DEPENDS roscpp  std_msgs tf wifi_scanner)
 
 
 include_directories(include ${catkin_INCLUDE_DIRS})

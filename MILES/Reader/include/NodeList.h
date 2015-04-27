@@ -9,7 +9,7 @@
 
 #include <Node.h>
 #include <string>
-
+#include <vector>
 
 class NodeList{
  public:
@@ -19,11 +19,14 @@ class NodeList{
 	std::string toString(int x);
 	std::string toString(int begin, int end);
 	std::string RouterInfo(std::string MAC);
-	Node list[10000];
+	Node list[2000];
 	int nodeCount;
-	void loadFromFile(std::string wifiFILE,std::string trajFILE);
+	void loadFromFile(std::string wifiFILE);
 	void toFile(std::string filename);
-
+	void Subtract(Node *curReading);
+	void Add();
+	std::vector<int> findMins();
+	void FindNN(NodeList *plist, int index);
        
 };
 #endif

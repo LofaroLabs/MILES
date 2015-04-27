@@ -14,13 +14,17 @@
 #include <iostream>
 #include "../include/qdude/main_window.hpp"
 #include "../include/qdude/USB_window.hpp"
+#include "../include/qdude/Port_window.hpp"
+
+#include <boost/asio/serial_port.hpp>
+#include <boost/asio.hpp>
 
 /*****************************************************************************
 ** Namespaces
 *****************************************************************************/
 
 namespace qdude {
-
+using namespace boost;
 using namespace Qt;
 
 /*****************************************************************************
@@ -69,7 +73,12 @@ void MainWindow::on_Go_clicked(bool check ) {
 void MainWindow::on_Close_clicked(bool check ) {
 	QWidget::close();
 }
-
+void MainWindow::on_actionPort_triggered(){
+	int argc=0;
+	char **argv=NULL;
+	qdude::PortWindow w(argc,argv,this);
+	w.exec();
+}
 void MainWindow::on_actionMetadata_From_File_triggered(){
 	//Get the filename
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Metadata File"),
@@ -100,9 +109,40 @@ void MainWindow::on_actionMetadata_From_File_triggered(){
 void MainWindow::on_actionMetadata_From_USB_triggered(){
 	int argc=0;
 	 char **argv=NULL;
-    qdude::USBWindow w(argc,argv,&ui);
+    qdude::USBWindow w(0,m_port,&ui);
     w.exec();
 }
+void MainWindow::on_actionPose_Estimate_triggered(){
+asio::io_service io;
+	asio::serial_port port(io);
+	port.open(this->m_port.c_str());
+	port.set_option(asio::serial_port_base::baud_rate(9600));
+	port.set_option(asio::serial_port::flow_control(asio::serial_port::flow_control::none));
+      	port.set_option(asio::serial_port::parity(asio::serial_port::parity::none));
+     	port.set_option(asio::serial_port::stop_bits(asio::serial_port::stop_bits::one));
+     	port.set_option(asio::serial_port::character_size(8));
+
+	std::string command= "LONCE\n";
+
+	asio::write(port,asio::buffer(command.c_str(),command.length()));
+
+	std::string answer="";
+	while(1){
+		char c;
+		//printf("Before\n");
+		asio::read(port, asio::buffer(&c,1));
+		//printf("After\n");
+		if(c=='\n'){
+			printf("Reached the end of line\n");
+			break;	
+		}
+		answer=answer+c;
+	
+	}
+	printf("%s\n",answer.c_str());
+	port.close();
+}
+
 /*****************************************************************************
 ** Implementation [Configuration]
 *****************************************************************************/

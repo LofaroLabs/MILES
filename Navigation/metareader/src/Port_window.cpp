@@ -1,0 +1,26 @@
+#include <QtGui>
+#include <QMessageBox>
+#include <iostream>
+#include "../include/qdude/Port_window.hpp"
+
+namespace qdude {
+using namespace Qt;
+//using namespace LibSerial ;
+PortWindow::PortWindow(int argc, char** argv, MainWindow *main_window, QWidget *parent)
+	: QDialog(parent)
+{
+	
+	m_main_window= main_window;
+	ui.setupUi(this); // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
+
+	//setWindowIcon(QIcon(":/images/icon.png"));
+	
+}
+PortWindow::~PortWindow() {}
+
+void PortWindow::on_buttonBox_accepted(){
+	this->m_main_window->m_port=ui.SerialPort->text().toStdString();
+	
+}
+
+}

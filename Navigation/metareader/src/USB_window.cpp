@@ -14,12 +14,13 @@ namespace qdude {
 using namespace boost;
 using namespace Qt;
 //using namespace LibSerial ;
-USBWindow::USBWindow(int argc, char** argv,Ui::MainWindowDesign *main_ui, QWidget *parent)
+USBWindow::USBWindow(int request,std::string Port,Ui::MainWindowDesign *main_ui, QWidget *parent)
 	: QDialog(parent)
-	, qnode(argc,argv)
 {
+	m_port= Port;
 	m_parent=parent;
 	m_main_ui= main_ui;
+	m_request=request;
 	ui.setupUi(this); // Calling this incidentally connects all ui's triggers to on_...() callbacks in this class.
 
 	//setWindowIcon(QIcon(":/images/icon.png"));
@@ -30,13 +31,18 @@ USBWindow::~USBWindow() {}
 void USBWindow::on_buttonBox_accepted(){
 	asio::io_service io;
 	asio::serial_port port(io);
-	port.open(ui.SerialPort->text().toStdString().c_str());
+	port.open(m_port.c_str());
 	port.set_option(asio::serial_port_base::baud_rate(9600));
 	port.set_option(asio::serial_port::flow_control(asio::serial_port::flow_control::none));
       	port.set_option(asio::serial_port::parity(asio::serial_port::parity::none));
      	port.set_option(asio::serial_port::stop_bits(asio::serial_port::stop_bits::one));
      	port.set_option(asio::serial_port::character_size(8));
-	std::string command="MD "+ui.buildNo->currentText().toStdString()+" "+ui.FloorNo->currentText().toStdString()+"\n";
+
+	std::string command;
+	if(m_request==0)
+		command="MD "+ui.buildNo->currentText().toStdString()+" "+ui.FloorNo->currentText().toStdString()+"\n";
+	else
+		command="MAP "+ui.buildNo->currentText().toStdString()+" "+ui.FloorNo->currentText().toStdString()+"\n";
 	
 	asio::write(port,asio::buffer(command.c_str(),command.length()));
 	//asio::write(port,asio::buffer("\n",1));
@@ -62,22 +68,22 @@ void USBWindow::on_buttonBox_accepted(){
 			break;		
 		}
 		
-		
-		QString lineString(answer.c_str());
-		QStringList info= lineString.split("||");
-		QStringList name=info[2].split(": ");
+		if(m_request==0){
+			QString lineString(answer.c_str());
+			QStringList info= lineString.split("||");
+			QStringList name=info[2].split(": ");
 
-		QString Location= name[1]+"("+info[0]+","+info[1]+")";
-		std::string print=Location.toStdString();
-		printf("%s\n",print.c_str());
+			QString Location= name[1]+"("+info[0]+","+info[1]+")";
+			std::string print=Location.toStdString();
+			printf("%s\n",print.c_str());
 
-		QString Description=info[3];
-		print=Description.toStdString();
-		m_main_ui->Locations->addItem(Location,Description);
-		printf("%s\n",print.c_str());
-		answer="";
-		//printf("Finished Read\n");
-		
+			QString Description=info[3];
+			print=Description.toStdString();
+			m_main_ui->Locations->addItem(Location,Description);
+			printf("%s\n",print.c_str());
+			answer="";
+			//printf("Finished Read\n");
+		}
 	}
 	printf("Finished Full Read\n");
 	port.close();

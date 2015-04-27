@@ -222,12 +222,18 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>Set</string>
     </property>
+    <addaction name="actionPort"/>
+   </widget>
+   <widget class="QMenu" name="menuGet">
+    <property name="title">
+     <string>Get</string>
+    </property>
     <addaction name="actionPose_Estimate"/>
-    <addaction name="separator"/>
     <addaction name="actionPose_Estimate_Auto"/>
    </widget>
    <addaction name="menuLoad"/>
    <addaction name="menuSet"/>
+   <addaction name="menuGet"/>
   </widget>
   <action name="actionMetadata_From_File">
    <property name="text">
@@ -252,6 +258,11 @@ p, li { white-space: pre-wrap; }
   <action name="actionPose_Estimate_Auto">
    <property name="text">
     <string>Pose Estimate Auto</string>
+   </property>
+  </action>
+  <action name="actionPort">
+   <property name="text">
+    <string>Port</string>
    </property>
   </action>
  </widget>

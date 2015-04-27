@@ -17,7 +17,7 @@ void writeToFile(wifi_scanner::wifi_signal_msg msg){
 			tf::StampedTransform transform;
 			printf("Scanner message found, writing to file\n");
   			//listener->lookupTransform("/odom", "/base_link", ros::Time(0), transform);
-			listener->lookupTransform("/base_laser_link", "/base_link", ros::Time(0), transform);
+			listener->lookupTransform("/map", "/base_link", ros::Time(0), transform);
 			fprintf(outfile,"x:%f||y:%f||z:%f||",
 				transform.getOrigin().x(),
 				transform.getOrigin().y(),

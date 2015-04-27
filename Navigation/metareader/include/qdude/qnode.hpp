@@ -38,7 +38,7 @@ public:
 	QNode(int argc, char** argv );
 	virtual ~QNode();
 	bool SetGoal(double x, double y);
-	
+	std::string Port;
 
 private:
 

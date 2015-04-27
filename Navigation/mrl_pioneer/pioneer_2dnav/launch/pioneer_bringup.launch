@@ -3,7 +3,7 @@
   <node pkg="rosaria" type="RosAria" name="rosaria">
     <remap from="rosaria/cmd_vel" to="cmd_vel"/>
     <remap from="rosaria/pose" to="odom"/>
-	<param name="port" value="/dev/ttyUSB1" />
+	<param name="port" value="/dev/ttyUSB0" />
   </node>
 
   <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node" output="screen">

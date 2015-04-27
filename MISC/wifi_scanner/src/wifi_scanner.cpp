@@ -190,6 +190,8 @@ void wifi_scan::process_iw_event(struct stream_descr *	stream,	/* Stream of even
             if (event->u.qual.level != 0 || (event->u.qual.updated & (IW_QUAL_DBM | IW_QUAL_RCPI))) {
               (*ap)->signal_noise = static_cast<signed char>(event->u.qual.noise);
               (*ap)->signal_strength = static_cast<signed char>(event->u.qual.level);
+	      if((*ap)->signal_strength>=0)
+	            (*ap)->signal_strength=((*ap)->signal_strength/2)-100;
               (*ap)->signal_quality = static_cast<int>(event->u.qual.qual);
               (*ap)->signal_updated = true;
             } else {

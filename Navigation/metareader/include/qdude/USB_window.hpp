@@ -1,6 +1,7 @@
 #ifndef qdude_USB_WINDOW_H
 #define qdude_USB_WINDOW_H
 
+#include <string>
 #include <QDialog>
 #include "ui_USB_window.h"
 #include "ui_main_window.h"
@@ -14,7 +15,7 @@ class USBWindow : public QDialog {
 Q_OBJECT
 
 public:
-	USBWindow(int argc, char** argv,Ui::MainWindowDesign *main_ui, QWidget *parent = 0);
+	USBWindow(int request,std::string Port,Ui::MainWindowDesign *main_ui, QWidget *parent = 0);
 	~USBWindow();
 
 public Q_SLOTS:
@@ -27,10 +28,11 @@ public Q_SLOTS:
 private:
 	Ui::USBWindowDesign ui;
 	Ui::MainWindowDesign *m_main_ui;
-	QNode qnode;
 	//libusb_device **devs;
 	//libusb_context *ctx;
 	QWidget *m_parent;
+	std::string m_port;
+	int m_request;
 };
 
 }  // namespace qdude

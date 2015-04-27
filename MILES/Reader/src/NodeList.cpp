@@ -1,7 +1,12 @@
 
 #include <NodeList.h>
 #include <Node.h>
-
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cmath> 
+#include <stdio.h>
+#include <stdlib.h> 
 //Normalize all the nodes in the nodelist
 void NodeList::NormalizeAll(){
 	for(int x=0;x<this->nodeCount;x++){
@@ -64,73 +69,63 @@ std::string NodeList::RouterInfo(std::string MAC){
 //Load the NodeList from file.
 //The files needed will be the wifi file created from the wifi listener, 
 //and the trajectory file created by rgbdslam
-void NodeList::loadFromFile(std::string wifiFILE,std::string trajFILE)
+void NodeList::loadFromFile(std::string wifiFILE)
 {
 	//Read from both the trajectory file from rgbdslam and the wifi file from wifi scanner
 	FILE* wfile=fopen(wifiFILE.c_str(),"r");
 
-	FILE* tfile=fopen(trajFILE.c_str(),"r");
 	
 	char line[10000];
 	this->nodeCount =0;
 	//Go through the wifi file line by line
-	while(fgets(line,1000,wfile)!=NULL){
+	while(fgets(line,10000,wfile)!=NULL){
 		std::string lineString = line;
-		int front=0;
-
-		//get the time stamp from the wifi file
-		int back = lineString.find("|");
-		std::string time = lineString.substr(0,back);
 		
-		printf("time %s\n",time.c_str());
-		double wtime =atof(time.c_str());
-		front=back;
+		//get x
+		int front= lineString.find(":");
+		
+		int back = lineString.find("||");
+		back=back-1;
+		std::string x = lineString.substr(front+1,back-front);
+		//std::cout <<"x "<<x<<" "<<front<<" "<<back<< std::endl;
+		lineString=lineString.substr(back+2,std::string::npos);
+				
+		//get y
+		front= lineString.find(":");
+
+		back = lineString.find("||");
+		back=back-1;
 	
-		std::string xstring;
-		std::string ystring;
-		std::string zstring;
-		//Go through the Trajectory file line by line
-		while(fgets(line,1000,tfile)!=NULL){
-			//Find the time that the trajectory was posted 
-			//and compare with the wifi time
-			std::string tstring = line;
-			int b = tstring.find(" ");
-			std::string t= tstring.substr(0,b);
-			double ptime = atof(t.c_str());
- 			
-			//if the times are close, get the xyz data
-			if(ptime-wtime<=.5&&ptime-wtime>=-.5){
-				tstring= tstring.substr(b+1,-1);
-				int f=0;
-				printf("time found %f\n",ptime);
-				
-				b=tstring.find(" ");
-				printf("f %d,b %d | %s",f,b,tstring.c_str());
-				xstring = tstring.substr(f,b);
-				printf("x %s\n",xstring.c_str());
-				
-				tstring= tstring.substr(b+1,-1);
-				b=tstring.find(" ");
-				ystring = tstring.substr(f,b);
-				printf("y %s\n",ystring.c_str());
-				tstring= tstring.substr(b+1,-1);
-				
-				b=tstring.find(" ")-f;
-				zstring = tstring.substr(f,b);
-				printf("z %s\n",zstring.c_str());
-				break;
-			}
-		}
-		
-		//convert to double and place in the position of the node
-		this->list[this->nodeCount].pos.x= atof(xstring.c_str());
-		this->list[this->nodeCount].pos.y= atof(ystring.c_str());
-		this->list[this->nodeCount].pos.z= atof(zstring.c_str());
+		std::string y = lineString.substr(front+1,back-front);
+		//std::cout <<"y "<<y<<" "<<front<<" "<<back<< std::endl;
+		lineString=lineString.substr(back+2,std::string::npos);
 
-		lineString=lineString.substr(back,-1);
+		//get z
+		front= lineString.find(":");
+		
+		back = lineString.find("||");
+		back=back-1;
+		
+		std::string z = lineString.substr(front+1,back-front);
+		//std::cout <<"z "<<z<< std::endl;
+		lineString=lineString.substr(back+2,std::string::npos);
+
+		//get time
+		front= 0;
+
+		back = lineString.find("||");
+		back=back-1;
+		
+		std::string time = lineString.substr(front+1,back-front);
+		//std::cout <<"time "<<time<< std::endl;
+		lineString=lineString.substr(back+2,std::string::npos);
+		
+		this->list[this->nodeCount].pos.x=std::stod(x.c_str());
+		this->list[this->nodeCount].pos.y=std::stod(y.c_str());
+		this->list[this->nodeCount].pos.z=std::stod(z.c_str());
 		std::string MAC;
 		std::string Str;
-		int routercount = 0;
+		this->list[this->nodeCount].routerCount=0;
 		
 		while(lineString.find("MAC")!=std::string::npos){
 
@@ -138,28 +133,95 @@ void NodeList::loadFromFile(std::string wifiFILE,std::string trajFILE)
 			back=lineString.find(",");
 			MAC = lineString.substr(front+6,back-front-6);
 			//std::cout <<"MAC "<<MAC<< std::endl;
-
+			
 			front=lineString.find("Str ");
 			back=lineString.find("]");
 			Str = lineString.substr(front+4,back-front-4);
 			//std::cout <<"Str " <<Str<< std::endl;
 			double num= std::stod(Str.c_str());
-			lineString=lineString.substr(back+1,-1);
+			lineString=lineString.substr(back+1,std::string::npos);
 			//std::cout <<lineString<< std::endl;
 			//convert from string and put in the router array
-			this->list[this->nodeCount].routers[routercount].MAC=MAC;
-			this->list[this->nodeCount].routers[routercount].Strength=num;
-			routercount++;
+			this->list[this->nodeCount].routers[this->list[this->nodeCount].routerCount].MAC=MAC;
+			this->list[this->nodeCount].routers[this->list[this->nodeCount].routerCount].Strength=num;
+			this->list[this->nodeCount].routerCount++;
+			//break;
 		}
+		//break;
+		this->list[this->nodeCount].id=this->nodeCount;
+		this->list[this->nodeCount].Pfactor=1;
 		this->nodeCount++;
+		
 	}
         fclose(wfile);
-	fclose(tfile);
 }
 
 void NodeList::toFile(std::string filename){
 	FILE* outfile=fopen(filename.c_str(),"w");
 	fprintf(outfile,"%s\n",this->toString().c_str());
 	fclose(outfile);
+
+}
+
+void NodeList::Subtract(Node *curReading){
+	for(int x=0; x<this->nodeCount;x++){
+		this->list[x].Subtract(curReading);		
+	}
+}
+
+void NodeList::Add(){
+	for(int x=0; x<this->nodeCount;x++){
+		this->list[x].Add();		
+	}
+	//printf("Add finished\n");
+}
+
+std::vector<int> NodeList::findMins(){
+	std::vector<int> mins;
+	double minimum=1;
+	int abs=0;
+	for(int x=0;x<this->nodeCount;x++){
+		if(this->list[x].prob<minimum){
+			minimum=this->list[x].prob;	
+			abs=x;
+			mins.push_back(x);
+		}
+	}
+	printf("Minimum :%f\n",minimum);
+	for(int x=0;x<this->nodeCount;x++){
+		if(this->list[x].prob>minimum-.05&&this->list[x].prob<minimum+.05){
+			if(x!=abs)
+				mins.push_back(x);
+	}
+	}
+	return mins;
+}
+
+
+
+void NodeList::FindNN(NodeList *plist, int index){
+	//Make a 2x2 square with the center being the index position
+	//double Llimitx=this->list[index].pos.x-1;
+	//double Llimity=this->list[index].pos.y-1;
+	//double Rlimitx=this->list[index].pos.x+1;
+	//double Rlimity=this->list[index].pos.y+1;
+	int test=0;
+	for(int x=0; x<this->nodeCount;x++){
+		double compx= fabs(this->list[index].pos.x-this->list[x].pos.x);
+		double compy= fabs(this->list[index].pos.y-this->list[x].pos.y);
+		
+		if(compy<4&&compx<4){
+			double factor= (8-compx+compy)/300;
+			//printf("Factor1 %f\n", this->list[x].Pfactor);
+			this->list[x].Pfactor+=factor;
+			if(this->list[x].Pfactor<0)
+				this->list[x].Pfactor=0;
+			//printf("Factor2 %f\n", this->list[x].Pfactor);
+			test++;
+		}	
+		
+	}
+	printf("x: %f y: %f factored: %d\n",this->list[index].pos.x,this->list[index].pos.y,test);
+	
 
 }

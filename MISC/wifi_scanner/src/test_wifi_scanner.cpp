@@ -36,6 +36,8 @@ std::function<scanning_callback> cb = [](access_point &ap){
          		std::cout<<"        \t mac: "<<ap.mac_address<<std::endl;
 			if(ap.signal_strength>=0)
                 		msg.Sig[AP]=(ap.signal_strength/2)-100;
+			else
+				msg.Sig[AP]=ap.signal_strength;
          		std::cout<<"        \t signal: "<<ap.signal_strength<<std::endl;
          		std::cout<<"        \t essid: "<<ap.essid<<std::endl<<std::endl;
 		}
